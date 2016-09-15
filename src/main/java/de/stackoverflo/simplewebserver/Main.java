@@ -1,3 +1,5 @@
+package de.stackoverflo.simplewebserver;
+
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,12 +9,10 @@ public class Main {
     private static Logger logger = LogManager.getLogger(Main.class);
 
     public static final String OPTION_DOCUMENT_ROOT     = "d";
-    public static final String OPTION_THREADS_PER_CORE  = "t";
     public static final String OPTION_LISTEN_PORT       = "p";
 
-    public static final int    DEFAULT_LISTEN_PORT      = 80;
+    public static final int    DEFAULT_LISTEN_PORT      = 8080;
     public static final String DEFAULT_DOCUMENT_ROOT    = "/var/www";
-    public static final int    DEFAULT_THREADS_PER_CORE = 25;
 
 
     public Main(String[] args) {
@@ -23,15 +23,13 @@ public class Main {
             CommandLine cmd = parser.parse(createOptions(), args);
 
             int listenPort      = readListenPort(cmd, Main.DEFAULT_LISTEN_PORT);
-            int threadsPerCore  = readThreadsPerCore(cmd, Main.DEFAULT_THREADS_PER_CORE);
             String documentRoot = readDocumentRoot(cmd, Main.DEFAULT_DOCUMENT_ROOT);
 
             // Start server
             logger.trace("Starting server on port " + listenPort
                     + ", serving " + documentRoot
-                    + " with "     + threadsPerCore + " threads per core"
             );
-            //new SimpleWebserver(port, documentRoot, threadsPerCore).acceptConnections();
+            new SimpleWebserver(listenPort, documentRoot).acceptConnections();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -45,11 +43,6 @@ public class Main {
 
     private int readListenPort(CommandLine cmd, int defaultValue) {
         return readIntegerOption(cmd, Main.OPTION_LISTEN_PORT, defaultValue);
-    }
-
-
-    private int readThreadsPerCore(CommandLine cmd, int defaultValue) {
-        return readIntegerOption(cmd, Main.OPTION_THREADS_PER_CORE, defaultValue);
     }
 
 
@@ -70,12 +63,6 @@ public class Main {
 
     private Options createOptions() {
         Options options = new Options();
-
-        options.addOption(
-            Main.OPTION_THREADS_PER_CORE,
-            true,
-            "Number of threads per core (default: " + DEFAULT_THREADS_PER_CORE + ")"
-        );
 
         options.addOption(
             Main.OPTION_DOCUMENT_ROOT,
