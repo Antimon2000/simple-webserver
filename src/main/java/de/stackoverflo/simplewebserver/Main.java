@@ -10,8 +10,10 @@ public class Main {
 
     public static final String OPTION_DOCUMENT_ROOT     = "d";
     public static final String OPTION_LISTEN_PORT       = "p";
+    public static final String OPTION_THREADS_PER_CORE  = "t";
 
     public static final int    DEFAULT_LISTEN_PORT      = 8080;
+    public static final int    DEFAULT_THREADS_PER_CORE = 25;
     public static final String DEFAULT_DOCUMENT_ROOT    = "/var/www";
 
 
@@ -22,27 +24,34 @@ public class Main {
         try {
             CommandLine cmd = parser.parse(createOptions(), args);
 
-            int listenPort      = readListenPort(cmd, Main.DEFAULT_LISTEN_PORT);
-            String documentRoot = readDocumentRoot(cmd, Main.DEFAULT_DOCUMENT_ROOT);
+            int listenPort      = readListenPort(cmd);
+            int threadsPerCore  = readThreadsPerCore(cmd);
+            String documentRoot = readDocumentRoot(cmd);
 
             // Start server
             logger.trace("Starting server on port " + listenPort
                     + ", serving " + documentRoot
             );
-            new SimpleWebserver(listenPort, documentRoot).acceptConnections();
+            new SimpleWebserver(listenPort, documentRoot, threadsPerCore).startServer();
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
 
-    private String readDocumentRoot(CommandLine cmd, String defaultValue) {
-        return cmd.getOptionValue(Main.OPTION_DOCUMENT_ROOT, defaultValue);
+    private String readDocumentRoot(CommandLine cmd) {
+        return cmd.getOptionValue(Main.OPTION_DOCUMENT_ROOT, Main.DEFAULT_DOCUMENT_ROOT);
     }
 
 
-    private int readListenPort(CommandLine cmd, int defaultValue) {
-        return readIntegerOption(cmd, Main.OPTION_LISTEN_PORT, defaultValue);
+    private int readListenPort(CommandLine cmd) {
+        return readIntegerOption(cmd, Main.OPTION_LISTEN_PORT, Main.DEFAULT_LISTEN_PORT);
+    }
+
+
+    private int readThreadsPerCore(CommandLine cmd) {
+        return readIntegerOption(cmd, Main.OPTION_THREADS_PER_CORE, Main.DEFAULT_THREADS_PER_CORE);
     }
 
 

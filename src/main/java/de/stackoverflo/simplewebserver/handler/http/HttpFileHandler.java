@@ -1,4 +1,5 @@
-package de.stackoverflo.simplewebserver.handler.http;/*
+package de.stackoverflo.simplewebserver.handler.http;
+/*
  * The class below was derived from an example of the Apache httpcore-nio packages under
  * http://hc.apache.org/httpcomponents-core-4.4.x/httpcore/examples/org/apache/http/examples/HttpFileServer.java
  *
@@ -10,7 +11,6 @@ package de.stackoverflo.simplewebserver.handler.http;/*
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.Locale;
 
 import de.stackoverflo.simplewebserver.handler.response.DirectoryListingHandler;
@@ -18,10 +18,8 @@ import de.stackoverflo.simplewebserver.handler.response.FileServerHandler;
 import de.stackoverflo.simplewebserver.handler.response.ResponseHandler;
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpCoreContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
 

@@ -1,57 +1,75 @@
 package de.stackoverflo.simplewebserver;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import de.stackoverflo.simplewebserver.handler.http.RequestHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import de.stackoverflo.simplewebserver.handler.http.HttpFileHandler;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.impl.bootstrap.HttpServer;
-import org.apache.http.impl.bootstrap.ServerBootstrap;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SimpleWebserver {
 
+    private static Logger logger = LogManager.getLogger(SimpleWebserver.class);
+
     private int listenPort;
+    private int threadsPerCore;
     private String documentRoot;
     private boolean isAcceptingNewRequests;
+    private ServerSocket serverSocket;
+    private ExecutorService executor;
 
-    public SimpleWebserver(int port, String documentRoot) {
-        if (port <= 0) {
+    public SimpleWebserver(int port, String documentRoot, int threadsPerCore) {
+        if (port <= 0 || threadsPerCore <= 0) {
             throw new IllegalArgumentException("numerals must be greater than zero");
         }
 
         this.listenPort = port;
         this.documentRoot = documentRoot;
+        this.threadsPerCore = threadsPerCore;
     }
 
-    public void acceptConnections() {
-        SocketConfig socketConfig = SocketConfig.custom()
-                .setSoTimeout(15000)
-                .setTcpNoDelay(true)
-                .build();
+    public void startServer() {
+        isAcceptingNewRequests = true;
 
-        final HttpServer server = ServerBootstrap.bootstrap()
-                .setListenerPort(listenPort)
-                .setServerInfo("Test/1.1")
-                .setSocketConfig(socketConfig)
-                .registerHandler("*", new HttpFileHandler(new File(documentRoot)))
-                .create();
-
-        try {
-            server.start();
-            server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Socket socket;
+        executor = Executors.newFixedThreadPool(getThreadPoolSize());
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                server.shutdown(5, TimeUnit.SECONDS);
+                stopServer();
             }
         });
+
+        try {
+            serverSocket = new ServerSocket(listenPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        while (isAcceptingNewRequests) {
+            try {
+                socket = serverSocket.accept();
+                executor.execute(new RequestHandler(socket, documentRoot));
+            } catch (IOException e) {
+                if (isAcceptingNewRequests) {
+                    logger.error(e.getStackTrace());
+                }
+            }
+        }
+    }
+
+
+    public void stopServer() {
+        isAcceptingNewRequests = false;
+        executor.shutdown();
+    }
+
+
+    private int getThreadPoolSize() {
+        return Runtime.getRuntime().availableProcessors() * threadsPerCore;
     }
 }
