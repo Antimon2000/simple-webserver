@@ -43,7 +43,7 @@ public class DirectoryListingHandler implements ResponseHandler {
 
         StringBuilder builder = new StringBuilder();
         builder
-            .append("<html><body><h1>Index of ").append(directory.getAbsoluteFile()).append("</h1>")
+            .append("<html><body><h1>Index of /").append(directory.getName()).append("</h1>")
             .append("<pre><ul>");
 
         for (File f : directories) {
