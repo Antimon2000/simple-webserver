@@ -1,9 +1,9 @@
 package de.stackoverflo.simplewebserver;
 
-import de.stackoverflo.simplewebserver.handler.http.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -53,7 +53,7 @@ public class SimpleWebserver {
         while (isAcceptingNewRequests) {
             try {
                 socket = serverSocket.accept();
-                executor.execute(new RequestHandler(socket, documentRoot));
+                executor.execute(new Thread(new HttpRequestListener(socket, new File(documentRoot))));
             } catch (IOException e) {
                 if (isAcceptingNewRequests) {
                     logger.error(e.getStackTrace());
@@ -65,7 +65,7 @@ public class SimpleWebserver {
 
     public void stopServer() {
         isAcceptingNewRequests = false;
-        executor.shutdown();
+        executor.shutdownNow();
     }
 
 

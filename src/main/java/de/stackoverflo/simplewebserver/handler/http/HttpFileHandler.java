@@ -25,11 +25,11 @@ import org.apache.http.util.EntityUtils;
 
 public class HttpFileHandler implements HttpRequestHandler {
 
-    private final File docRoot;
+    private final File documentRoot;
 
     public HttpFileHandler(final File documentRoot) {
         super();
-        this.docRoot = documentRoot;
+        this.documentRoot = documentRoot;
     }
 
     public void handle(
@@ -49,7 +49,7 @@ public class HttpFileHandler implements HttpRequestHandler {
             System.out.println("Incoming entity content (bytes): " + entityContent.length);
         }
 
-        final File file = new File(this.docRoot, URLDecoder.decode(target, "UTF-8"));
+        final File file = new File(this.documentRoot, URLDecoder.decode(target, "UTF-8"));
         if (!file.exists()) {
 
             response.setStatusCode(HttpStatus.SC_NOT_FOUND);
