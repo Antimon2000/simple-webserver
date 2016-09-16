@@ -9,19 +9,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.Socket;
 
-public class RequestHandler implements Runnable {
+public class RequestListener implements Runnable {
 
-    private static Logger logger = LogManager.getLogger(RequestHandler.class);
+    private static Logger logger = LogManager.getLogger(RequestListener.class);
 
     private static final int BUFFER_SIZE = 8 * 1024;
 
     private Socket socket;
     private String documentRoot;
 
-    public RequestHandler(Socket socket, String documentRoot) {
+    public RequestListener(Socket socket, String documentRoot) {
         this.socket = socket;
         this.documentRoot = documentRoot;
     }
@@ -29,7 +28,7 @@ public class RequestHandler implements Runnable {
     public void run() {
         logger.trace("Starting new request handler");
 
-        DefaultBHttpServerConnection conn = new DefaultBHttpServerConnection(RequestHandler.BUFFER_SIZE);
+        DefaultBHttpServerConnection conn = new DefaultBHttpServerConnection(RequestListener.BUFFER_SIZE);
 
         try {
             conn.bind(socket);

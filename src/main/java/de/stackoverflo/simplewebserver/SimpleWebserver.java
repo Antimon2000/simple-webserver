@@ -1,6 +1,7 @@
 package de.stackoverflo.simplewebserver;
 
-import de.stackoverflo.simplewebserver.handler.http.RequestHandler;
+import de.stackoverflo.simplewebserver.handler.http.RequestListener;
+import org.apache.http.protocol.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,13 +48,13 @@ public class SimpleWebserver {
         try {
             serverSocket = new ServerSocket(listenPort);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace());
         }
 
         while (isAcceptingNewRequests) {
             try {
                 socket = serverSocket.accept();
-                executor.execute(new RequestHandler(socket, documentRoot));
+                executor.execute(new RequestListener(socket, documentRoot));
             } catch (IOException e) {
                 if (isAcceptingNewRequests) {
                     logger.error(e.getStackTrace());

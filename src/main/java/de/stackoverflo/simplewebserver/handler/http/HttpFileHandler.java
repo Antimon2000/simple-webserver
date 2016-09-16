@@ -1,7 +1,7 @@
 package de.stackoverflo.simplewebserver.handler.http;
 /*
- * The class below was derived from an example of the Apache httpcore-nio packages under
- * http://hc.apache.org/httpcomponents-core-4.4.x/httpcore/examples/org/apache/http/examples/HttpFileServer.java
+ * The class below was derived from an example of the Apache httpcomponents project under
+ * https://svn.apache.org/repos/asf/httpcomponents/httpcore/tags/4.0.1/httpcore/src/examples/org/apache/http/examples/ElementalHttpServer.java
  *
  * It has been reduced to meet the requirements of the task at hand and was adjusted for the sake of cleaner OOP design.
  *
@@ -25,11 +25,11 @@ import org.apache.http.util.EntityUtils;
 
 public class HttpFileHandler implements HttpRequestHandler {
 
-    private final File docRoot;
+    private final File documentRoot;
 
     public HttpFileHandler(final File documentRoot) {
         super();
-        this.docRoot = documentRoot;
+        this.documentRoot = documentRoot;
     }
 
     public void handle(
@@ -49,7 +49,7 @@ public class HttpFileHandler implements HttpRequestHandler {
             System.out.println("Incoming entity content (bytes): " + entityContent.length);
         }
 
-        final File file = new File(this.docRoot, URLDecoder.decode(target, "UTF-8"));
+        final File file = new File(this.documentRoot, URLDecoder.decode(target, "UTF-8"));
         if (!file.exists()) {
 
             response.setStatusCode(HttpStatus.SC_NOT_FOUND);
