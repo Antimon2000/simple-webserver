@@ -47,7 +47,7 @@ public class DirectoryListingHandler implements ResponseHandler {
             .append("<pre><ul>");
 
         for (File f : directories) {
-            builder.append("<li>").append(f.getName()).append("</li>");
+            builder.append("<li>").append(f.getName()).append("/</li>");
         }
 
         for (File f : files) {
