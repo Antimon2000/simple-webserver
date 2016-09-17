@@ -17,7 +17,7 @@ public class SimpleWebserver {
     private int listenPort;
     private int threadsPerCore;
     private String documentRoot;
-    private boolean isAcceptingNewRequests;
+    private boolean isAcceptingConnections;
     private ServerSocket serverSocket;
     private ExecutorService executor;
 
@@ -32,7 +32,7 @@ public class SimpleWebserver {
     }
 
     public void startServer() {
-        isAcceptingNewRequests = true;
+        isAcceptingConnections = true;
 
         Socket socket;
         executor = Executors.newFixedThreadPool(getThreadPoolSize());
@@ -50,12 +50,12 @@ public class SimpleWebserver {
             e.printStackTrace();
         }
 
-        while (isAcceptingNewRequests) {
+        while (isAcceptingConnections) {
             try {
                 socket = serverSocket.accept();
                 executor.execute(new Thread(new HttpRequestListener(socket, new File(documentRoot))));
             } catch (IOException e) {
-                if (isAcceptingNewRequests) {
+                if (isAcceptingConnections) {
                     logger.error(e.getStackTrace());
                 }
             }
@@ -64,7 +64,7 @@ public class SimpleWebserver {
 
 
     public void stopServer() {
-        isAcceptingNewRequests = false;
+        isAcceptingConnections = false;
         executor.shutdownNow();
     }
 

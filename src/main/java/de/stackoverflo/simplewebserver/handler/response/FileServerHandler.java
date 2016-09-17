@@ -1,5 +1,6 @@
 package de.stackoverflo.simplewebserver.handler.response;
 
+import de.stackoverflo.simplewebserver.util.HashUtil;
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
@@ -28,12 +29,26 @@ public class FileServerHandler implements ResponseHandler {
             final HttpResponse response,
             final HttpContext context) throws HttpException, IOException {
 
+        try {
+            String etag = HashUtil.calculateMD5Hash(file);
+            String quote = "\"";
+            response.addHeader("etag", quote + etag + quote);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
         HttpCoreContext coreContext = HttpCoreContext.adapt(context);
         HttpConnection conn = coreContext.getConnection(HttpConnection.class);
         response.setStatusCode(HttpStatus.SC_OK);
-        FileEntity body = new FileEntity(file, ContentType.create("text/html", (Charset) null));
+
+        ContentType contentType
+                = file.getName().endsWith(".html")
+                ? ContentType.create("text/html", (Charset) null)
+                : ContentType.create("text/plain", (Charset) null);
+
+        FileEntity body = new FileEntity(file, contentType);
         response.setEntity(body);
 
-        logger.trace(conn + ": serving file " + file.getPath());
+        logger.info(conn + ": serving file " + file.getPath());
     }
 }

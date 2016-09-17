@@ -16,7 +16,7 @@ public class RequestHandler implements Runnable {
 
     private static Logger logger = LogManager.getLogger(RequestHandler.class);
 
-    private static final int BUFFER_SIZE = 8 * 1024;
+    private static final int BUFFER_SIZE = 9192;
 
     private Socket socket;
     private String documentRoot;

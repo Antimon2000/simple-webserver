@@ -40,14 +40,19 @@ import java.util.Locale;
 
 import de.stackoverflo.simplewebserver.handler.response.DirectoryListingHandler;
 import de.stackoverflo.simplewebserver.handler.response.FileServerHandler;
+import de.stackoverflo.simplewebserver.util.HashUtil;
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HttpFileHandler implements HttpRequestHandler {
+
+    private static Logger logger = LogManager.getLogger(HttpFileHandler.class);
 
     private final File documentRoot;
 
@@ -62,18 +67,23 @@ public class HttpFileHandler implements HttpRequestHandler {
             final HttpContext context) throws HttpException, IOException {
 
         String method = request.getRequestLine().getMethod().toUpperCase(Locale.ROOT);
-        if (!method.equals("GET") && !method.equals("HEAD") && !method.equals("POST")) {
+        if (!method.equals("GET") && !method.equals("HEAD")) {
             throw new MethodNotSupportedException(method + " method not supported");
         }
         String target = request.getRequestLine().getUri();
 
+        /*  16.09. 23:38
         if (request instanceof HttpEntityEnclosingRequest) {
             HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
             byte[] entityContent = EntityUtils.toByteArray(entity);
             System.out.println("Incoming entity content (bytes): " + entityContent.length);
         }
+        */
 
         final File file = new File(this.documentRoot, URLDecoder.decode(target, "UTF-8"));
+
+
+
         if (!file.exists()) {
             response.setStatusCode(HttpStatus.SC_NOT_FOUND);
             StringEntity entity = new StringEntity(
