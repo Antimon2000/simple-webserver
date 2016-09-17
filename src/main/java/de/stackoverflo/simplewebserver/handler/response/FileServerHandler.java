@@ -49,6 +49,6 @@ public class FileServerHandler implements ResponseHandler {
         FileEntity body = new FileEntity(file, contentType);
         response.setEntity(body);
 
-        logger.info(conn + ": serving file " + file.getPath());
+        logger.info(conn + ": serving file /" + file.getName());
     }
 }

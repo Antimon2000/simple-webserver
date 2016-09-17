@@ -1,6 +1,6 @@
 package de.stackoverflo.simplewebserver.handler.http;
 /*
- * The class below was derived from example of Apache's httpcore under
+ * Parts of the class below were derived from an example of Apache's httpcore under
  * https://hc.apache.org/httpcomponents-core-4.4.x/httpcore/examples/org/apache/http/examples/HttpFileServer.java
  *
  * It has been reduced to only do what's required for the task at hand and was adjusted for the sake of cleaner OOP
@@ -38,19 +38,16 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Locale;
 
-import de.stackoverflo.simplewebserver.handler.response.DirectoryListingHandler;
-import de.stackoverflo.simplewebserver.handler.response.FileServerHandler;
-import de.stackoverflo.simplewebserver.util.HashUtil;
+import de.stackoverflo.simplewebserver.handler.response.*;
 import org.apache.http.*;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class HttpFileHandler implements HttpRequestHandler {
+
+    public static final String KEY_ATTR_FILE = "file";
 
     private static Logger logger = LogManager.getLogger(HttpFileHandler.class);
 
@@ -81,31 +78,24 @@ public class HttpFileHandler implements HttpRequestHandler {
         */
 
         final File file = new File(this.documentRoot, URLDecoder.decode(target, "UTF-8"));
-
-
+        context.setAttribute(KEY_ATTR_FILE, file);
 
         if (!file.exists()) {
-            response.setStatusCode(HttpStatus.SC_NOT_FOUND);
-            StringEntity entity = new StringEntity(
-                    "<html><body><h1>File " + file.getPath() +  " not found</h1></body></html>",
-                    ContentType.create("text/html", "UTF-8"));
-            response.setEntity(entity);
-            System.out.println("File " + file.getPath() + " not found");
+            new FileNotFoundHandler().handle(request, response, context);
 
         } else if (!file.canRead()) {
-            response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-            StringEntity entity = new StringEntity(
-                    "<html><body><h1>Access denied</h1></body></html>",
-                    ContentType.create("text/html", "UTF-8"));
-            response.setEntity(entity);
-            System.out.println("Cannot read file " + file.getPath());
+            new AccessDeniedHandler().handle(request, response, context);
 
         } else if (file.isDirectory()) {
             new DirectoryListingHandler(file).handle(request, response, context);
 
         } else {
-            new FileServerHandler(file).handle(request, response, context);
+            ResponseHandler rh =
+                    new IfNonMatchHandler(file,
+                        new FileServerHandler(file)
+                    );
 
+            rh.handle(request, response, context);
         }
     }
 
