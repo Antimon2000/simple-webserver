@@ -1,5 +1,6 @@
 package de.stackoverflo.simplewebserver.handler.response;
 
+import de.stackoverflo.simplewebserver.util.DateUtil;
 import de.stackoverflo.simplewebserver.util.HashUtil;
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
@@ -17,6 +18,9 @@ public class FileServerHandler implements ResponseHandler {
 
     private static Logger logger = LogManager.getLogger(FileServerHandler.class);
 
+    public static final String HEADER_ETAG = "ETag";
+    public static final String HEADER_LAST_MODIFIED = "Last-Modified";
+
     private File file;
 
     public FileServerHandler(File file) {
@@ -29,14 +33,18 @@ public class FileServerHandler implements ResponseHandler {
             final HttpResponse response,
             final HttpContext context) throws HttpException, IOException {
 
+        // Set headers
+        response.setHeader(HEADER_LAST_MODIFIED, DateUtil.getHttpDateFromTimestamp(file.lastModified()));
+
         try {
             String etag = HashUtil.calculateMD5Hash(file);
             String quote = "\"";
-            response.addHeader("etag", quote + etag + quote);
+            response.addHeader(HEADER_ETAG, quote + etag + quote);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
+        // Read file and set body
         HttpCoreContext coreContext = HttpCoreContext.adapt(context);
         HttpConnection conn = coreContext.getConnection(HttpConnection.class);
         response.setStatusCode(HttpStatus.SC_OK);

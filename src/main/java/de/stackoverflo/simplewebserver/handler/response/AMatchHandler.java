@@ -13,7 +13,7 @@ public abstract class AMatchHandler implements ResponseHandler {
 
     private static Logger logger = LogManager.getLogger(AMatchHandler.class);
 
-    public static final String TAG_WILDCARD = "*";
+    public static final String ETAG_WILDCARD = "*";
 
     private ResponseHandler responseHandler;
     private File file;
@@ -34,7 +34,7 @@ public abstract class AMatchHandler implements ResponseHandler {
             for (Header header : headers) {
                 doHandle = false;
 
-                if (TAG_WILDCARD.equals(header.getValue()) || fileContentHash.equals(header.getValue()) == getTriggerHook()) {
+                if (ETAG_WILDCARD.equals(header.getValue()) || fileContentHash.equals(header.getValue()) == getTriggerHook()) {
                     doHandle = true;
                     break;
                 }

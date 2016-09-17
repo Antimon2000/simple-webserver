@@ -91,9 +91,12 @@ public class HttpFileHandler implements HttpRequestHandler {
 
         } else {
             ResponseHandler rh =
-                    new IfNonMatchHandler(file,
+                new IfModifiedSinceHandler(
+                    new IfNonMatchHandler(
+                        file,
                         new FileServerHandler(file)
-                    );
+                    )
+                );
 
             rh.handle(request, response, context);
         }
