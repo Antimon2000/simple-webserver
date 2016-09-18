@@ -1,56 +1,53 @@
 package de.stackoverflo.simplewebserver.handler.response;
 
-import de.stackoverflo.simplewebserver.util.HashUtil;
+import de.stackoverflo.simplewebserver.handler.http.HttpFileHandler;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AMatchHandler implements ResponseHandler {
 
     private static Logger logger = LogManager.getLogger(AMatchHandler.class);
 
-    public static final String ETAG_WILDCARD = "*";
+    private static final String ETAG_WILDCARD = "*";
 
-    private ResponseHandler responseHandler;
-    private File file;
+    ResponseHandler responseHandler;
 
-    public AMatchHandler(File file, ResponseHandler responseHandler) {
+    AMatchHandler(ResponseHandler responseHandler) {
         this.responseHandler = responseHandler;
-        this.file = file;
     }
 
-    @Override
-    public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        boolean doHandle = true;
 
-        try {
-            String fileContentHash = HashUtil.calculateMD5Hash(file);
+    File getTargetFile(HttpContext context) {
+        File file = (File) context.getAttribute(HttpFileHandler.KEY_ATTR_FILE);
+        return file;
+    }
 
-            Header[] headers = request.getHeaders(getHeaderName());
-            for (Header header : headers) {
-                doHandle = false;
 
-                if (ETAG_WILDCARD.equals(header.getValue()) || fileContentHash.equals(header.getValue()) == getTriggerHook()) {
-                    doHandle = true;
-                    break;
-                }
+    List<String> readEntityTags(HttpRequest request) {
+        List<String> etags = new ArrayList<>();
+
+        Header[] headers = request.getHeaders(getHeaderName());
+        for (Header header : headers) {
+            HeaderElement[] elements = header.getElements();
+            for (HeaderElement headerElement : elements) {
+                logger.debug("Found ETag " + headerElement.getName());
+                etags.add(headerElement.getName());
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
         }
 
-        if (doHandle) {
-            responseHandler.handle(request, response, context);
-        } else {
-            response.setStatusCode(HttpStatus.SC_PRECONDITION_FAILED);
-        }
+        return etags;
     }
 
-    abstract boolean getTriggerHook();
+
+    boolean isWildcard(String etag) {
+        return ETAG_WILDCARD.equals(etag);
+    }
 
     /**
      * Returns the name of the header to be used, e.g. If-Non-Matching.

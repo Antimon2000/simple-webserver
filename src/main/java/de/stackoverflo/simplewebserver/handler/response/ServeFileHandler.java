@@ -14,16 +14,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class FileServerHandler implements ResponseHandler {
+public class ServeFileHandler implements ResponseHandler {
 
-    private static Logger logger = LogManager.getLogger(FileServerHandler.class);
+    private static Logger logger = LogManager.getLogger(ServeFileHandler.class);
 
     public static final String HEADER_ETAG = "ETag";
     public static final String HEADER_LAST_MODIFIED = "Last-Modified";
 
     private File file;
 
-    public FileServerHandler(File file) {
+    public ServeFileHandler(File file) {
         this.file = file;
     }
 

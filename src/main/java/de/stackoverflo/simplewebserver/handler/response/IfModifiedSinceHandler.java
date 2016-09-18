@@ -4,12 +4,16 @@ import de.stackoverflo.simplewebserver.handler.http.HttpFileHandler;
 import de.stackoverflo.simplewebserver.util.DateUtil;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 public class IfModifiedSinceHandler implements ResponseHandler {
+
+    private static Logger logger = LogManager.getLogger(IfModifiedSinceHandler.class);
 
     public static final String IF_MODIFIED_SINCE = "If-Modified-Since";
 
@@ -42,6 +46,7 @@ public class IfModifiedSinceHandler implements ResponseHandler {
         if (wasModified) {
             responseHandler.handle(request, response, context);
         } else {
+            logger.debug("File was not modified");
             response.setStatusCode(HttpStatus.SC_NOT_MODIFIED);
         }
     }
