@@ -13,17 +13,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class IfNonMatchHandler extends AMatchHandler {
+public class IfNoneMatchHandler extends AMatchHandler {
 
-    private static Logger logger = LogManager.getLogger(IfNonMatchHandler.class);
+    private static Logger logger = LogManager.getLogger(IfNoneMatchHandler.class);
 
-    public IfNonMatchHandler(ResponseHandler responseHandler) {
+    public IfNoneMatchHandler(ResponseHandler responseHandler) {
         super(responseHandler);
     }
 
     @Override
     String getHeaderName() {
-        return "If-Non-Match";
+        return "If-None-Match";
     }
 
     @Override

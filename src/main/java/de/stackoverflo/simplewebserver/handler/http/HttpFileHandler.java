@@ -64,7 +64,7 @@ public class HttpFileHandler implements HttpRequestHandler {
             // Response handlers in the spirit of the Decorator Pattern
             ResponseHandler rh =
                 new IfModifiedSinceHandler(
-                    new IfNonMatchHandler(
+                    new IfNoneMatchHandler(
                         new IfMatchHandler(
                             new ServeFileHandler(file)
                         )

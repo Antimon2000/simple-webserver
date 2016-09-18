@@ -36,8 +36,9 @@ public abstract class AMatchHandler implements ResponseHandler {
         for (Header header : headers) {
             HeaderElement[] elements = header.getElements();
             for (HeaderElement headerElement : elements) {
-                logger.debug("Found ETag " + headerElement.getName());
-                etags.add(headerElement.getName());
+                String tag = headerElement.getName().replace("\"", "");
+                logger.debug("Found ETag " + tag);
+                etags.add(tag);
             }
         }
 
