@@ -33,6 +33,9 @@ public class IfNoneMatchHandler extends AMatchHandler {
         String fileContentHash;
 
         if (request.containsHeader(getHeaderName())) {
+            // As If-None-Match is present make sure If-Modified-Since will be ignored
+            request.removeHeaders(IfModifiedSinceHandler.IF_MODIFIED_SINCE);
+
             doHandle = false;
             file = getTargetFile(context);
             try {
@@ -59,6 +62,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
         if (doHandle) {
             responseHandler.handle(request, response, context);
         } else {
+            // Legit because method can only be GET or HEAD
             response.setStatusCode(HttpStatus.SC_NOT_MODIFIED);
         }
     }

@@ -36,11 +36,11 @@ public class HttpRequestListener implements Runnable {
             requestHandlerMapper.register("*", new HttpFileHandler(documentRoot));
 
             HttpProcessor httpProcessor = HttpProcessorBuilder.create()
-                    .add(new ResponseDate())
-                    .add(new ResponseServer("SimpleWebserver/1.1"))
-                    .add(new ResponseContent())
-                    .add(new ResponseConnControl())
-                    .build();
+                .add(new ResponseDate())
+                .add(new ResponseServer("SimpleWebserver/1.1"))
+                .add(new ResponseContent())
+                .add(new ResponseConnControl())
+                .build();
 
             HttpService httpService = new HttpService(httpProcessor, requestHandlerMapper);
 

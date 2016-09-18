@@ -44,11 +44,14 @@ public class ServeFileHandler implements ResponseHandler {
             logger.error(e.getMessage());
         }
 
-        // Read file and set body
         HttpCoreContext coreContext = HttpCoreContext.adapt(context);
         HttpConnection conn = coreContext.getConnection(HttpConnection.class);
         response.setStatusCode(HttpStatus.SC_OK);
 
+        /*
+         * Determine correct MIME type here. As for the task the lookup
+         * will assume text/plain unless the file ends with the .html extension.
+         */
         ContentType contentType
                 = file.getName().endsWith(".html")
                 ? ContentType.create("text/html", (Charset) null)

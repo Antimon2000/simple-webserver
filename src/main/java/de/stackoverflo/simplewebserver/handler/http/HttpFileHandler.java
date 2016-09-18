@@ -61,11 +61,15 @@ public class HttpFileHandler implements HttpRequestHandler {
             new DirectoryListingHandler(file).handle(request, response, context);
 
         } else {
-            // Response handlers in the spirit of the Decorator Pattern
+            /*
+             * Response handlers in the spirit of the Decorator Pattern
+             *
+             * Precedence according to RFC 7232 Section 6.
+             */
             ResponseHandler rh =
-                new IfModifiedSinceHandler(
+                new IfMatchHandler(
                     new IfNoneMatchHandler(
-                        new IfMatchHandler(
+                        new IfModifiedSinceHandler(
                             new ServeFileHandler(file)
                         )
                     )
