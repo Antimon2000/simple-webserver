@@ -40,11 +40,7 @@ public class IfMatchHandler extends AMatchHandler {
 
                 List<String> entityTags = readEntityTags(request);
                 for (String entityTag : entityTags) {
-                    if (fileContentHash.equals(entityTag)) {
-                        doHandle = true;
-                        break;
-
-                    } else if (isWildcard(entityTag)) {
+                    if (fileContentHash.equals(entityTag) || isWildcard(entityTag)) {
                         doHandle = true;
                         break;
                     }

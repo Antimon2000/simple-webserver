@@ -56,7 +56,7 @@ public class SimpleWebserver {
                 executor.execute(new Thread(new HttpRequestListener(socket, new File(documentRoot))));
             } catch (IOException e) {
                 if (isAcceptingConnections) {
-                    logger.error(e.getStackTrace());
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -64,6 +64,7 @@ public class SimpleWebserver {
 
 
     public void stopServer() {
+        logger.info("Shutting down server");
         isAcceptingConnections = false;
         executor.shutdownNow();
     }

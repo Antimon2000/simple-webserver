@@ -7,7 +7,7 @@ import java.security.MessageDigest;
 
 public class HashUtil {
 
-    public static String calculateMD5Hash(File file) throws Exception {
+    public static synchronized String calculateMD5Hash(File file) throws Exception {
         try {
             byte[] b = Files.readAllBytes(file.toPath());
             byte[] hash = MessageDigest.getInstance("MD5").digest(b);

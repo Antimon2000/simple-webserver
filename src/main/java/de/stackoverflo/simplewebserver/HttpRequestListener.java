@@ -50,7 +50,7 @@ public class HttpRequestListener implements Runnable {
                 logger.debug("Handled " + (++reuseCount) + " request(s)");
             }
         } catch (IOException | HttpException e) {
-            logger.error(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 }

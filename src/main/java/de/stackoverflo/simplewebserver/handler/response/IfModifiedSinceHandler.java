@@ -26,24 +26,26 @@ public class IfModifiedSinceHandler implements ResponseHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
         Header header = request.getLastHeader(IF_MODIFIED_SINCE);
-        Date lastModifiedDate;
+        Date ifModifiedSinceDate;
 
-        boolean wasModified = true;
+        boolean dateParseable = true;
+        boolean wasModified = false;
 
         if (header != null) {
             try {
                 File file = (File) context.getAttribute(HttpFileHandler.KEY_ATTR_FILE);
-                lastModifiedDate = DateUtil.parseFromHttpDate(header.getValue());
+                ifModifiedSinceDate = DateUtil.parseFromHttpDate(header.getValue());
 
-                if (lastModifiedDate.before(new Date(file.lastModified()))) {
+                if (ifModifiedSinceDate.before(new Date(file.lastModified()))) {
                     wasModified = true;
                 }
             } catch (java.text.ParseException e) {
-                e.printStackTrace();
+                dateParseable = false;
+                logger.warn(e.getMessage());
             }
         }
 
-        if (wasModified) {
+        if (!request.containsHeader(IF_MODIFIED_SINCE) || wasModified || !dateParseable) {
             responseHandler.handle(request, response, context);
         } else {
             logger.debug("File was not modified");

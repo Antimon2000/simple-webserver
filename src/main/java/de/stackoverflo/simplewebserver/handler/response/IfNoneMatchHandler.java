@@ -28,7 +28,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
 
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        boolean doHandle = true;
+        boolean hasMatch = false;
         File file;
         String fileContentHash;
 
@@ -36,19 +36,14 @@ public class IfNoneMatchHandler extends AMatchHandler {
             // As If-None-Match is present, If-Modified-Since must be ignored (see RFC 7232)
             request.removeHeaders(IfModifiedSinceHandler.IF_MODIFIED_SINCE);
 
-            doHandle = false;
             file = getTargetFile(context);
             try {
                 fileContentHash = HashUtil.calculateMD5Hash(file);
 
                 List<String> entityTags = readEntityTags(request);
                 for (String entityTag : entityTags) {
-                    if (!fileContentHash.equals(entityTag)) {
-                        doHandle = true;
-                        break;
-
-                    } else if (isWildcard(entityTag)) {
-                        doHandle = true;
+                    if (fileContentHash.equals(entityTag) || isWildcard(entityTag)) {
+                        hasMatch = true;
                         break;
                     }
                 }
@@ -57,7 +52,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
             }
         }
 
-        if (doHandle) {
+        if (!request.containsHeader(getHeaderName()) || !hasMatch) {
             responseHandler.handle(request, response, context);
         } else {
             // Legit because method can only be GET or HEAD
