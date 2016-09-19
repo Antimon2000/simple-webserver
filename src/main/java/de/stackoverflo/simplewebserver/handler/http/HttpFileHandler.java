@@ -41,14 +41,12 @@ public class HttpFileHandler implements HttpRequestHandler {
          * Precedence of conditional handlers according to RFC 7232 Section 6.
          */
         ResponseHandler rh =
-            new AccessDeniedHandler(
+            new FileNotFoundHandler(
                 new IfMatchHandler(
                     new IfNoneMatchHandler(
                         new IfModifiedSinceHandler(
-                            new FileNotFoundHandler(
-                                new DirectoryListingHandler(
-                                    new ServeFileHandler()
-                                )
+                            new DirectoryListingHandler(
+                                new ServeFileHandler()
                             )
                         )
                     )

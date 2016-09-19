@@ -10,13 +10,15 @@ import java.io.IOException;
 
 public class IfNoneMatchHandler extends AMatchHandler {
 
+    public static final String HEADERNAME_IF_NONE_MATCH = "If-None-Match";
+
     public IfNoneMatchHandler(ResponseHandler responseHandler) {
         super(responseHandler);
     }
 
     @Override
     String getHeaderName() {
-        return "If-None-Match";
+        return HEADERNAME_IF_NONE_MATCH;
     }
 
     @Override
@@ -27,13 +29,5 @@ public class IfNoneMatchHandler extends AMatchHandler {
     @Override
     boolean shouldForward(boolean hasTagsMatching) {
         return !hasTagsMatching;
-    }
-
-    @Override
-    protected void performHandling(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        // As the If-None-Match header is present, the header If-Modified-Since MUST be ignored (see RFC 7232)
-        request.removeHeaders(IfModifiedSinceHandler.HEADERNAME_IF_MODIFIED_SINCE);
-
-        super.performHandling(request, response, context);
     }
 }

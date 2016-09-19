@@ -23,7 +23,8 @@ public class IfModifiedSinceHandler extends AResponseHandler {
 
     @Override
     boolean isApplicable(HttpRequest request, HttpContext context) {
-        return request.containsHeader(HEADERNAME_IF_MODIFIED_SINCE);
+        return request.containsHeader(HEADERNAME_IF_MODIFIED_SINCE)
+                && !request.containsHeader(IfNoneMatchHandler.HEADERNAME_IF_NONE_MATCH);
     }
 
     @Override

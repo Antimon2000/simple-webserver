@@ -4,13 +4,15 @@ import org.apache.http.HttpStatus;
 
 public class IfMatchHandler extends AMatchHandler {
 
+    public static final String HEADERNAME_IF_MATCH = "If-Match";
+
     public IfMatchHandler(ResponseHandler responseHandler) {
         super(responseHandler);
     }
 
     @Override
     String getHeaderName() {
-        return "If-Match";
+        return HEADERNAME_IF_MATCH;
     }
 
     @Override

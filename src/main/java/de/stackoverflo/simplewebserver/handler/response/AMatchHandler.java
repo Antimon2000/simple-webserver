@@ -99,7 +99,7 @@ abstract class AMatchHandler extends AResponseHandler {
     }
 
 
-    private boolean isWildcard(String etag) {
+    static synchronized boolean isWildcard(String etag) {
         return ETAG_WILDCARD.equals(etag);
     }
 

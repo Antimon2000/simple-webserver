@@ -1,9 +1,6 @@
 package de.stackoverflo.simplewebserver.handler.response;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
@@ -23,7 +20,18 @@ public class FileNotFoundHandler extends AResponseHandler {
 
     @Override
     boolean isApplicable(HttpRequest request, HttpContext context) {
-        return !getResource(context).exists();
+        boolean hasIfMatchWildcard = false;
+
+        Header header = request.getFirstHeader(IfMatchHandler.HEADERNAME_IF_MATCH);
+        HeaderElement[] headerElements = header.getElements();
+        for (HeaderElement headerElement : headerElements) {
+            if (AMatchHandler.isWildcard(headerElement.getName())) {
+                hasIfMatchWildcard = true;
+                break;
+            }
+        }
+
+        return !getResource(context).exists() && !hasIfMatchWildcard;
     }
 
     @Override
