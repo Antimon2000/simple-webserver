@@ -11,41 +11,42 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class IfModifiedSinceHandler implements ResponseHandler {
+public class IfModifiedSinceHandler extends AResponseHandler {
 
     private static Logger logger = LogManager.getLogger(IfModifiedSinceHandler.class);
 
-    public static final String IF_MODIFIED_SINCE = "If-Modified-Since";
-
-    private ResponseHandler responseHandler;
+    public static final String HEADERNAME_IF_MODIFIED_SINCE = "If-Modified-Since";
 
     public IfModifiedSinceHandler(ResponseHandler responseHandler) {
-        this.responseHandler = responseHandler;
+        super(responseHandler);
     }
 
     @Override
-    public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        Header header = request.getLastHeader(IF_MODIFIED_SINCE);
+    boolean isApplicable(HttpRequest request, HttpContext context) {
+        return request.containsHeader(HEADERNAME_IF_MODIFIED_SINCE);
+    }
+
+    @Override
+    protected void performHandling(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
+        Header header = request.getLastHeader(HEADERNAME_IF_MODIFIED_SINCE);
         Date ifModifiedSinceDate;
 
-        boolean dateParseable = true;
-        boolean wasModified = false;
+        boolean isDateParseable = true;
+        boolean hasNewerVersion = false;
 
-        if (header != null) {
-            try {
-                File file = (File) context.getAttribute(HttpFileHandler.KEY_ATTR_FILE);
-                ifModifiedSinceDate = DateUtil.parseFromHttpDate(header.getValue());
+        try {
+            File file = getResource(context);
+            ifModifiedSinceDate = DateUtil.parseFromHttpDate(header.getValue());
 
-                if (ifModifiedSinceDate.before(new Date(file.lastModified()))) {
-                    wasModified = true;
-                }
-            } catch (java.text.ParseException e) {
-                dateParseable = false;
-                logger.warn(e.getMessage());
+            if (ifModifiedSinceDate.before(new Date(file.lastModified()))) {
+                hasNewerVersion = true;
             }
+        } catch (java.text.ParseException e) {
+            isDateParseable = false;
+            logger.warn(e.getMessage());
         }
 
-        if (!request.containsHeader(IF_MODIFIED_SINCE) || wasModified || !dateParseable) {
+        if (hasNewerVersion || !isDateParseable) {
             responseHandler.handle(request, response, context);
         } else {
             logger.debug("File was not modified");
