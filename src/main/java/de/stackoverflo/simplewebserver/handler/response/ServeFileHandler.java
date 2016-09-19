@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class ServeFileHandler implements ResponseHandler {
+public class ServeFileHandler extends AResponseHandler {
 
     private static Logger logger = LogManager.getLogger(ServeFileHandler.class);
 
@@ -23,15 +23,22 @@ public class ServeFileHandler implements ResponseHandler {
 
     private File file;
 
-    public ServeFileHandler(File file) {
-        this.file = file;
+    public ServeFileHandler() {
+        super(null);
     }
 
     @Override
-    public void handle(
+    boolean isApplicable(HttpRequest request, HttpContext context) {
+        return true;
+    }
+
+    @Override
+    public void performHandling(
             final HttpRequest request,
             final HttpResponse response,
             final HttpContext context) throws HttpException, IOException {
+
+        this.file = getResource(context);
 
         // Set headers
         response.setHeader(HEADER_LAST_MODIFIED, DateUtil.getHttpDateFromTimestamp(file.lastModified()));

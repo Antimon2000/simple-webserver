@@ -14,13 +14,26 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
-public class AccessDeniedHandler implements ResponseHandler {
+public class AccessDeniedHandler extends AResponseHandler {
 
     private static Logger logger = LogManager.getLogger(AccessDeniedHandler.class);
 
+    public AccessDeniedHandler(ResponseHandler responseHandler) {
+        super(responseHandler);
+    }
+
     @Override
-    public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        File file = (File) context.getAttribute(HttpFileHandler.KEY_ATTR_FILE);
+    boolean isApplicable(HttpRequest request, HttpContext context) {
+        return !getResource(context).canRead();
+    }
+
+    @Override
+    public void performHandling(
+            HttpRequest request,
+            HttpResponse response,
+            HttpContext context) throws HttpException, IOException {
+
+        File file = getResource(context);
 
         response.setStatusCode(HttpStatus.SC_FORBIDDEN);
         StringEntity entity = new StringEntity(

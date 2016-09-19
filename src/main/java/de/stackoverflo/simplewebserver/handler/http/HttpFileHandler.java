@@ -1,12 +1,4 @@
 package de.stackoverflo.simplewebserver.handler.http;
-/*
- * Parts of the class below were derived from an example of Apache's httpcore under
- * https://hc.apache.org/httpcomponents-core-4.4.x/httpcore/examples/org/apache/http/examples/HttpFileServer.java
- *
- * It has been reduced to only do what's required for the task at hand and was adjusted for the sake of cleaner OOP
- * design.
- *
- */
 
 import java.io.File;
 import java.io.IOException;
@@ -43,31 +35,26 @@ public class HttpFileHandler implements HttpRequestHandler {
         final File file = new File(this.documentRoot, URLDecoder.decode(target, "UTF-8"));
         context.setAttribute(KEY_ATTR_FILE, file);
 
-        if (!file.exists()) {
-            new FileNotFoundHandler().handle(request, response, context);
-
-        } else if (!file.canRead()) {
-            new AccessDeniedHandler().handle(request, response, context);
-
-        } else if (file.isDirectory()) {
-            new DirectoryListingHandler(file).handle(request, response, context);
-
-        } else {
-            /*
-             * Response handlers in the spirit of the Chain-of-Responsibility design pattern.
-             *
-             * Precedence according to RFC 7232 Section 6.
-             */
-            ResponseHandler rh =
+        /*
+         * Response handlers in the spirit of the Chain of Responsibility design pattern.
+         *
+         * Precedence of conditional handlers according to RFC 7232 Section 6.
+         */
+        ResponseHandler rh =
+            new AccessDeniedHandler(
                 new IfMatchHandler(
                     new IfNoneMatchHandler(
                         new IfModifiedSinceHandler(
-                            new ServeFileHandler(file)
+                            new FileNotFoundHandler(
+                                new DirectoryListingHandler(
+                                    new ServeFileHandler()
+                                )
+                            )
                         )
                     )
-                );
+                )
+            );
 
             rh.handle(request, response, context);
-        }
     }
 }

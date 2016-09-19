@@ -13,17 +13,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectoryListingHandler implements ResponseHandler {
+public class DirectoryListingHandler extends AResponseHandler {
 
-    private HttpResponse response;
-    private File directory;
-
-    public DirectoryListingHandler(File directory) {
-        this.directory = directory;
+    public DirectoryListingHandler(ResponseHandler responseHandler) {
+        super(responseHandler);
     }
 
     @Override
-    public void handle(
+    boolean isApplicable(HttpRequest request, HttpContext context) {
+        return getResource(context).isDirectory();
+    }
+
+    @Override
+    protected void performHandling(
             final HttpRequest request,
             final HttpResponse response,
             final HttpContext context) throws HttpException, IOException {
@@ -31,7 +33,8 @@ public class DirectoryListingHandler implements ResponseHandler {
         List<File> directories = new ArrayList<>();
         List<File> files = new ArrayList<>();
 
-        for (File currentFile : directory.listFiles()) {
+        File file = getResource(context);
+        for (File currentFile : file.listFiles()) {
             if (currentFile.isDirectory()) {
                 directories.add(currentFile);
             } else {
@@ -43,8 +46,8 @@ public class DirectoryListingHandler implements ResponseHandler {
 
         StringBuilder builder = new StringBuilder();
         builder
-            .append("<html><body><h1>Index of /").append(directory.getName()).append("</h1>")
-            .append("<pre><ul style=\"list-style: none\">");
+                .append("<html><body><h1>Index of /").append(file.getName()).append("</h1>")
+                .append("<pre><ul style=\"list-style: none\">");
 
         for (File f : directories) {
             builder.append("<li>D ").append(f.getName()).append("/</li>");
@@ -55,12 +58,13 @@ public class DirectoryListingHandler implements ResponseHandler {
         }
 
         builder
-            .append("</ul></pre>")
-            .append("</body></html>");
+                .append("</ul></pre>")
+                .append("</body></html>");
 
         StringEntity entity = new StringEntity(
                 builder.toString(),
                 ContentType.create("text/html", "UTF-8"));
+
         response.setEntity(entity);
     }
 
