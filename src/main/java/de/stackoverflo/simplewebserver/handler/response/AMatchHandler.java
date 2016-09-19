@@ -15,6 +15,7 @@ public abstract class AMatchHandler implements ResponseHandler {
     private static Logger logger = LogManager.getLogger(AMatchHandler.class);
 
     private static final String ETAG_WILDCARD = "*";
+    private static final String PREFIX_WEAK_TAG = "W/";
 
     ResponseHandler responseHandler;
 
@@ -49,6 +50,18 @@ public abstract class AMatchHandler implements ResponseHandler {
 
     boolean isWildcard(String etag) {
         return ETAG_WILDCARD.equals(etag);
+    }
+
+    boolean isWeakTag(String etag) {
+        return etag.startsWith(PREFIX_WEAK_TAG);
+    }
+
+    String getEntityTagToken(String etag) {
+        if (isWeakTag(etag)) {
+            return etag.substring(PREFIX_WEAK_TAG.length());
+        } else {
+            return etag;
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
 
     private static Logger logger = LogManager.getLogger(IfNoneMatchHandler.class);
 
+
     public IfNoneMatchHandler(ResponseHandler responseHandler) {
         super(responseHandler);
     }
@@ -42,7 +43,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
 
                 List<String> entityTags = readEntityTags(request);
                 for (String entityTag : entityTags) {
-                    if (fileContentHash.equals(entityTag) || isWildcard(entityTag)) {
+                    if (fileContentHash.equals(getEntityTagToken(entityTag)) || isWildcard(entityTag)) {
                         hasMatch = true;
                         break;
                     }
