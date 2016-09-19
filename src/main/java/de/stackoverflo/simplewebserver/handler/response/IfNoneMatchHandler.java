@@ -33,7 +33,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
         String fileContentHash;
 
         if (request.containsHeader(getHeaderName())) {
-            // As If-None-Match is present make sure If-Modified-Since will be ignored
+            // As If-None-Match is present, If-Modified-Since must be ignored
             request.removeHeaders(IfModifiedSinceHandler.IF_MODIFIED_SINCE);
 
             doHandle = false;
@@ -48,10 +48,8 @@ public class IfNoneMatchHandler extends AMatchHandler {
                         break;
 
                     } else if (isWildcard(entityTag)) {
-                        if (file.exists()) {
-                            doHandle = true;
-                            break;
-                        }
+                        doHandle = true;
+                        break;
                     }
                 }
             } catch (Exception e) {

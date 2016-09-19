@@ -44,14 +44,14 @@ public class DirectoryListingHandler implements ResponseHandler {
         StringBuilder builder = new StringBuilder();
         builder
             .append("<html><body><h1>Index of /").append(directory.getName()).append("</h1>")
-            .append("<pre><ul>");
+            .append("<pre><ul style=\"list-style: none\">");
 
         for (File f : directories) {
-            builder.append("<li>").append(f.getName()).append("/</li>");
+            builder.append("<li>D ").append(f.getName()).append("/</li>");
         }
 
         for (File f : files) {
-            builder.append("<li>").append(f.getName()).append("</li>");
+            builder.append("<li>F ").append(f.getName()).append("</li>");
         }
 
         builder

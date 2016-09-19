@@ -45,10 +45,8 @@ public class IfMatchHandler extends AMatchHandler {
                         break;
 
                     } else if (isWildcard(entityTag)) {
-                        if (file.exists()) {
-                            doHandle = true;
-                            break;
-                        }
+                        doHandle = true;
+                        break;
                     }
                 }
             } catch (Exception e) {

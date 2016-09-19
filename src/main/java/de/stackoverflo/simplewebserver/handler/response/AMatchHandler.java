@@ -36,6 +36,7 @@ public abstract class AMatchHandler implements ResponseHandler {
         for (Header header : headers) {
             HeaderElement[] elements = header.getElements();
             for (HeaderElement headerElement : elements) {
+                // Simplified parsing because server only sends strong tags anyway
                 String tag = headerElement.getName().replace("\"", "");
                 logger.debug("Found ETag " + tag);
                 etags.add(tag);

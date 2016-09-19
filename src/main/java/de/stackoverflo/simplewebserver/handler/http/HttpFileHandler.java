@@ -40,14 +40,6 @@ public class HttpFileHandler implements HttpRequestHandler {
         }
         String target = request.getRequestLine().getUri();
 
-        /*  16.09. 23:38
-        if (request instanceof HttpEntityEnclosingRequest) {
-            HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
-            byte[] entityContent = EntityUtils.toByteArray(entity);
-            System.out.println("Incoming entity content (bytes): " + entityContent.length);
-        }
-        */
-
         final File file = new File(this.documentRoot, URLDecoder.decode(target, "UTF-8"));
         context.setAttribute(KEY_ATTR_FILE, file);
 
@@ -62,7 +54,7 @@ public class HttpFileHandler implements HttpRequestHandler {
 
         } else {
             /*
-             * Response handlers in the spirit of the Decorator Pattern
+             * Response handlers in the spirit of the Chain-of-Responsibility design pattern.
              *
              * Precedence according to RFC 7232 Section 6.
              */
