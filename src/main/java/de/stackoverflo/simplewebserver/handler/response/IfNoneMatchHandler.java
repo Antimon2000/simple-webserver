@@ -33,7 +33,7 @@ public class IfNoneMatchHandler extends AMatchHandler {
         String fileContentHash;
 
         if (request.containsHeader(getHeaderName())) {
-            // As If-None-Match is present, If-Modified-Since must be ignored
+            // As If-None-Match is present, If-Modified-Since must be ignored (see RFC 7232)
             request.removeHeaders(IfModifiedSinceHandler.IF_MODIFIED_SINCE);
 
             doHandle = false;

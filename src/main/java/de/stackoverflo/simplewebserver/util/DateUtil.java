@@ -22,7 +22,6 @@ public class DateUtil {
     public static synchronized Date parseFromHttpDate(String httpDate) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat(PATTERN_RFC1123, Locale.US);
         Date d = dateFormat.parse(httpDate);
-
         return d;
     }
 }

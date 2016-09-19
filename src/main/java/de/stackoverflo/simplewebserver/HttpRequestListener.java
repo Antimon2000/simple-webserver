@@ -44,10 +44,10 @@ public class HttpRequestListener implements Runnable {
 
             HttpService httpService = new HttpService(httpProcessor, requestHandlerMapper);
 
-            int reuseCount = 1;
+            int reuseCount = 0;
             while (conn.isOpen()) {
                 httpService.handleRequest(conn, HttpCoreContext.create());
-                logger.debug("Handled request #" + reuseCount++ + " on connection");
+                logger.debug("Handled " + (++reuseCount) + " request(s)");
             }
         } catch (IOException | HttpException e) {
             logger.error(e.getMessage());
