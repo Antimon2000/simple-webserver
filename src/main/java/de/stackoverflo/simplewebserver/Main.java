@@ -29,8 +29,9 @@ public class Main {
             String documentRoot = readDocumentRoot(cmd);
 
             // Start server
-            logger.trace("Starting server on port " + listenPort
+            logger.info("Starting server on port " + listenPort
                     + ", serving " + documentRoot
+                    + " with max. " + threadsPerCore + " threads per core"
             );
             new SimpleWebserver(listenPort, documentRoot, threadsPerCore).startServer();
 
@@ -83,6 +84,12 @@ public class Main {
             Main.OPTION_LISTEN_PORT,
             true,
             "Port that this server is listening for connections on (default: " + DEFAULT_LISTEN_PORT + ")"
+        );
+
+        options.addOption(
+            Main.OPTION_THREADS_PER_CORE,
+            true,
+            "Maximum number of threads per core (default: " + DEFAULT_THREADS_PER_CORE + ")"
         );
 
         return options;

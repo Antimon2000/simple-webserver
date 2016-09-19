@@ -23,11 +23,13 @@ public class FileNotFoundHandler extends AResponseHandler {
         boolean hasIfMatchWildcard = false;
 
         Header header = request.getFirstHeader(IfMatchHandler.HEADERNAME_IF_MATCH);
-        HeaderElement[] headerElements = header.getElements();
-        for (HeaderElement headerElement : headerElements) {
-            if (AMatchHandler.isWildcard(headerElement.getName())) {
-                hasIfMatchWildcard = true;
-                break;
+        if (header != null) {
+            HeaderElement[] headerElements = header.getElements();
+            for (HeaderElement headerElement : headerElements) {
+                if (AMatchHandler.isWildcard(headerElement.getName())) {
+                    hasIfMatchWildcard = true;
+                    break;
+                }
             }
         }
 

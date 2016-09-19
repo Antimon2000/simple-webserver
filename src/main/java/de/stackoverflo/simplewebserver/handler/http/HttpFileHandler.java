@@ -53,6 +53,6 @@ public class HttpFileHandler implements HttpRequestHandler {
                 )
             );
 
-            rh.handle(request, response, context);
+        rh.handle(request, response, context);
     }
 }
