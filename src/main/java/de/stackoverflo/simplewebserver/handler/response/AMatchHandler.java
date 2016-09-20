@@ -32,7 +32,7 @@ abstract class AMatchHandler extends AResponseHandler {
     /**
      * HTTP status code which is returned when the condition is not fulfilled.
      *
-     * @return HTTP status code as in RFC 2616
+     * @return HTTP status code according to RFC 7232
      */
     abstract int getErrorCode();
 
@@ -99,20 +99,20 @@ abstract class AMatchHandler extends AResponseHandler {
     }
 
 
-    static synchronized boolean isWildcard(String etag) {
-        return ETAG_WILDCARD.equals(etag);
+    static synchronized boolean isWildcard(String entityTag) {
+        return ETAG_WILDCARD.equals(entityTag);
     }
 
 
-    private boolean isWeakTag(String etag) {
-        return etag.startsWith(PREFIX_WEAK_TAG);
+    private boolean isWeakTag(String entityTag) {
+        return entityTag.startsWith(PREFIX_WEAK_TAG);
     }
 
-    private String getEntityTagToken(String etag) {
-        if (isWeakTag(etag)) {
-            return etag.substring(PREFIX_WEAK_TAG.length());
+    private String getEntityTagToken(String entityTag) {
+        if (isWeakTag(entityTag)) {
+            return entityTag.substring(PREFIX_WEAK_TAG.length());
         } else {
-            return etag;
+            return entityTag;
         }
     }
 }

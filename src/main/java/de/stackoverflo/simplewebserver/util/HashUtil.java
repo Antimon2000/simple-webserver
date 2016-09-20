@@ -14,7 +14,7 @@ public class HashUtil {
 
             return DatatypeConverter.printHexBinary(hash).toLowerCase();
         } catch (Exception e) {
-            throw new Exception("hash could not be calculated");
+            return "0"; // Return an element which is not part of the range of the hashing function.
         }
     }
 

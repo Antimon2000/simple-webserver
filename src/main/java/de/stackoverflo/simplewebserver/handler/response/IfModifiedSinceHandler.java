@@ -1,6 +1,5 @@
 package de.stackoverflo.simplewebserver.handler.response;
 
-import de.stackoverflo.simplewebserver.handler.http.HttpFileHandler;
 import de.stackoverflo.simplewebserver.util.DateUtil;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
