@@ -12,7 +12,7 @@ public class Main {
     public static final String OPTION_LISTEN_PORT       = "p";
     public static final String OPTION_THREADS_PER_CORE  = "t";
 
-    public static final int    DEFAULT_LISTEN_PORT      = 8080;
+    public static final int    DEFAULT_LISTEN_PORT      = 80;
     public static final int    DEFAULT_THREADS_PER_CORE = 25;
     public static final String DEFAULT_DOCUMENT_ROOT    = "/var/www";
 
